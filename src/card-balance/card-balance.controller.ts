@@ -7,14 +7,13 @@ import { CardResult } from './models/card-result.model';
 @ApiTags('Card Balance')
 @Controller('card-balance')
 export class CardBalanceController {
-  constructor(private readonly cardBalanceService: CardBalanceService) { }
+  constructor(private readonly cardBalanceService: CardBalanceService) {}
+
   /**
    * Check Carrefour gift card balance
    */
   @Post()
-  async checkBalance(
-    @Body() dto: CheckCardBalanceDto,
-  ): Promise<CardResult | null> {
+  checkBalance(@Body() dto: CheckCardBalanceDto): Promise<CardResult | null> {
     return this.cardBalanceService.checkCardBalance(dto);
   }
 }

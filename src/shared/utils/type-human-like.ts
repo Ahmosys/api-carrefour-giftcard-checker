@@ -5,7 +5,9 @@ export async function typeHumanLike(
   selector: string,
   text: string,
 ): Promise<void> {
-  await page.$eval(selector, (el: any) => (el.value = ''));
+  await page.$eval(selector, (el: HTMLInputElement) => {
+    el.value = '';
+  });
   for (const char of text) {
     await page.type(selector, char, {
       delay: Math.floor(Math.random() * 100) + 30,

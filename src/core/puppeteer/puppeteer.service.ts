@@ -30,7 +30,9 @@ export class PuppeteerService {
 
     try {
       if (config.debug)
-        this.logger.log(`[Init] Launching Puppeteer (headless: ${config.headless})`);
+        this.logger.log(
+          `[Init] Launching Puppeteer (headless: ${config.headless})`,
+        );
 
       browser = await puppeteer.launch({
         headless: config.headless,
@@ -55,53 +57,91 @@ export class PuppeteerService {
       page.setDefaultTimeout(config.timeout ?? 30000);
       page.setDefaultNavigationTimeout(config.timeout ?? 30000);
 
-      if (config.debug) this.logger.log('[Init] Browser launched, new page created');
+      if (config.debug)
+        this.logger.log('[Init] Browser launched, new page created');
 
       await this.configurePage(page);
 
       let attempts = 0;
 
-      while (!result && (attempts < maxRetries)) {
+      while (!result && attempts < maxRetries) {
         attempts++;
 
-        if (config.debug) this.logger.log(`[Attempt ${attempts}] Starting balance check...`);
+        if (config.debug)
+          this.logger.log(`[Attempt ${attempts}] Starting balance check...`);
 
         try {
-          await page.goto('https://www.cartecadeau.carrefour.fr/page/30/mes-cartes-cadeaux-carrefour');
-          if (config.debug) this.logger.log('[Step] Navigated to gift card page');
+          await page.goto(
+            'https://www.cartecadeau.carrefour.fr/page/30/mes-cartes-cadeaux-carrefour',
+          );
+          if (config.debug)
+            this.logger.log('[Step] Navigated to gift card page');
 
-          await retryOperation(() => this.clickElement(page, 'a.modal-carte-detail'), maxRetries);
-          if (config.debug) this.logger.log('[Step] Clicked on balance consultation link');
+          await retryOperation(
+            () => this.clickElement(page, 'a.modal-carte-detail'),
+            maxRetries,
+          );
+          if (config.debug)
+            this.logger.log('[Step] Clicked on balance consultation link');
 
-          await page.waitForSelector('input[name="data[pan_carte]"]', { visible: true });
+          await page.waitForSelector('input[name="data[pan_carte]"]', {
+            visible: true,
+          });
           await page.evaluate(() => {
-            const input = document.querySelector('input[name="data[pan_carte]"]');
+            const input = document.querySelector(
+              'input[name="data[pan_carte]"]',
+            );
             if (input) input.removeAttribute('readonly');
           });
 
-          if (config.debug) this.logger.log('[Step] Unlocked card number input field');
+          if (config.debug)
+            this.logger.log('[Step] Unlocked card number input field');
 
-          await typeHumanLike(page, 'input[name="data[pan_carte]"]', config.cardNumber);
-          if (config.debug) this.logger.log(`[Input] Card number filled: ${config.cardNumber}`);
+          await typeHumanLike(
+            page,
+            'input[name="data[pan_carte]"]',
+            config.cardNumber,
+          );
+          if (config.debug)
+            this.logger.log(`[Input] Card number filled: ${config.cardNumber}`);
 
-          await retryOperation(() => page.evaluate(() => {
-            const button = document.querySelector('input[name="submitpan"]') as HTMLElement;
-            if (!button) throw new Error('Card submit button not found');
-            button.click();
-          }), maxRetries);
+          await retryOperation(
+            () =>
+              page.evaluate(() => {
+                const button = document.querySelector(
+                  'input[name="submitpan"]',
+                ) as HTMLElement;
+                if (!button) throw new Error('Card submit button not found');
+                button.click();
+              }),
+            maxRetries,
+          );
           if (config.debug) this.logger.log('[Step] Submitted card number');
 
-          await page.waitForSelector('input[name="data[pin_carte]"]', { visible: true });
-          await typeHumanLike(page, 'input[name="data[pin_carte]"]', config.pin);
-          if (config.debug) this.logger.log(`[Input] PIN filled: ${config.pin}`);
+          await page.waitForSelector('input[name="data[pin_carte]"]', {
+            visible: true,
+          });
+          await typeHumanLike(
+            page,
+            'input[name="data[pin_carte]"]',
+            config.pin,
+          );
+          if (config.debug)
+            this.logger.log(`[Input] PIN filled: ${config.pin}`);
 
           await this.delay(this.getRandomDelay(600, 1300));
 
-          await retryOperation(() => page.evaluate(() => {
-            const button = document.querySelector('input[name="submitcaptcha"]') as HTMLElement;
-            if (!button) throw new Error('PIN submit button not found');
-            button.click();
-          }), maxRetries);
+          await retryOperation(
+            () =>
+              page.evaluate(() => {
+                const button = document.querySelector(
+                  'input[name="submitcaptcha"]',
+                ) as HTMLElement;
+                if (!button) throw new Error('PIN submit button not found');
+                button.click();
+              }),
+            maxRetries,
+          );
           if (config.debug) this.logger.log('[Step] Submitted PIN');
 
           await page.waitForSelector('.bkDetailResponse', {
@@ -109,19 +149,27 @@ export class PuppeteerService {
             timeout: config.timeout,
           });
 
-          if (config.debug) this.logger.log('[Step] Waiting for result container...');
+          if (config.debug)
+            this.logger.log('[Step] Waiting for result container...');
 
           result = await this.extractCardResult(page);
 
           if (result) {
-            this.logger.log(`[Success] Balance: ${result.balance}, Valid Until: ${result.validityDate}`);
+            this.logger.log(
+              `[Success] Balance: ${result.balance}, Valid Until: ${result.validityDate}`,
+            );
           } else {
             this.logger.warn('[Warn] Could not extract balance data');
           }
         } catch (innerError) {
           this.logger.warn(`[Retry ${attempts}] Failed attempt`);
           if (config.debug) {
-            this.logger.error(`Detailed error:`, innerError instanceof Error ? innerError.stack : String(innerError));
+            this.logger.error(
+              `Detailed error:`,
+              innerError instanceof Error
+                ? innerError.stack
+                : String(innerError),
+            );
           }
 
           if (attempts < maxRetries) {
@@ -132,7 +180,10 @@ export class PuppeteerService {
         }
       }
     } catch (error) {
-      this.logger.error('[Fatal] Unrecoverable error in scraping routine', error instanceof Error ? error.stack : String(error));
+      this.logger.error(
+        '[Fatal] Unrecoverable error in scraping routine',
+        error instanceof Error ? error.stack : String(error),
+      );
     } finally {
       await browser?.close();
       if (config.debug) this.logger.log('[Cleanup] Browser closed');
@@ -151,9 +202,9 @@ export class PuppeteerService {
     page.on('request', (request) => {
       const resourceType = request.resourceType();
       if (['image', 'font', 'media'].includes(resourceType)) {
-        request.abort();
+        void request.abort();
       } else {
-        request.continue();
+        void request.continue();
       }
     });
   }
