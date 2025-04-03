@@ -77,6 +77,8 @@ export class PuppeteerService {
           if (config.debug)
             this.logger.log('[Step] Navigated to gift card page');
 
+          await this.delay(this.getRandomDelay(600, 1300));
+
           await retryOperation(
             () => this.clickElement(page, 'a.modal-carte-detail'),
             maxRetries,
