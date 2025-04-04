@@ -9,6 +9,10 @@ import { ScraperOptions } from './types/scraper-options.model';
 
 puppeteer.use(StealthPlugin());
 
+/**
+ * Service responsible for scraping gift card balance information
+ * using Puppeteer headless browser
+ */
 @Injectable()
 export class PuppeteerService {
   private readonly logger = new Logger(PuppeteerService.name);
@@ -28,6 +32,19 @@ export class PuppeteerService {
     '--no-default-browser-check',
     '--no-first-run',
     '--no-zygote',
+    '--aggressive-cache-discard',
+    '--disable-cache',
+    '--disable-application-cache',
+    '--disable-offline-load-stale-cache',
+    '--disable-dev-shm-usage',
+    '--disable-component-extensions-with-background-pages',
+    '--disable-features=TranslateUI,BlinkGenPropertyTrees',
+    '--disable-extensions',
+    '--disable-component-update',
+    '--disable-domain-reliability',
+    '--disable-backgrounding-occluded-windows',
+    '--disable-renderer-backgrounding',
+    '--disable-ipc-flooding-protection',
   ];
 
   /**
@@ -162,6 +179,7 @@ export class PuppeteerService {
   ): Promise<CardResult | null> {
     // Navigate to gift card page
     await page.goto(this.CARREFOUR_CARD_URL);
+
     if (config.debug) this.logger.log('[Step] Navigated to gift card page');
 
     await this.delay(this.getRandomDelay(600, 1300));
@@ -418,5 +436,22 @@ export class PuppeteerService {
    */
   private getRandomDelay(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  /**
+   * Measures the execution time of an operation and records it
+   * @param operation Function to execute and measure
+   * @param label Descriptive label to identify the operation in logs
+   * @returns The result of the operation
+   */
+  private async measurePerformance<T>(
+    operation: () => Promise<T>,
+    label: string,
+  ): Promise<T> {
+    const start = Date.now();
+    const result = await operation();
+    const duration = Date.now() - start;
+    this.logger.debug(`[Performance] ${label}: ${duration}ms`);
+    return result;
   }
 }
