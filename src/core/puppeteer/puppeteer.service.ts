@@ -21,7 +21,6 @@ export class PuppeteerService {
   private readonly BROWSER_ARGS = [
     '--disable-gpu',
     '--no-sandbox',
-    '--disable-extensions',
     '--disable-setuid-sandbox',
     '--disable-background-networking',
     '--disable-default-apps',
@@ -158,8 +157,14 @@ export class PuppeteerService {
     await page.setRequestInterception(true);
 
     page.on('request', (request) => {
+      const url = request.url();
       const resourceType = request.resourceType();
-      if (['image', 'font', 'media'].includes(resourceType)) {
+      const blockedDomains = ['google-analytics.com', 'doubleclick.net'];
+
+      if (
+        ['image', 'font', 'media'].includes(resourceType) ||
+        blockedDomains.some((domain) => url.includes(domain))
+      ) {
         void request.abort();
       } else {
         void request.continue();
@@ -225,6 +230,7 @@ export class PuppeteerService {
   ): Promise<void> {
     await page.waitForSelector('input[name="data[pan_carte]"]', {
       visible: true,
+      timeout: config.timeout,
     });
 
     // Remove readonly attribute
@@ -283,6 +289,7 @@ export class PuppeteerService {
   ): Promise<void> {
     await page.waitForSelector('input[name="data[pin_carte]"]', {
       visible: true,
+      timeout: config.timeout,
     });
 
     // Enter PIN
@@ -384,7 +391,9 @@ export class PuppeteerService {
    * @param selector CSS selector of the element to be clicked
    */
   private async clickElement(page: Page, selector: string): Promise<void> {
-    await page.waitForSelector(selector, { visible: true });
+    await page.waitForSelector(selector, {
+      visible: true,
+    });
     await page.evaluate((sel) => {
       const el = document.querySelector(sel) as HTMLElement;
       if (!el) throw new Error(`Element not found: ${sel}`);
