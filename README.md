@@ -3,15 +3,15 @@
 <div align="center">
   <h1> Carrefour Gift Card Verification API</h1>
   <img src="docs/banner-readme.png" alt="banner" width="100%">
-  <img src="https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white">
-  <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white">
-  <img src="https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white">
-  <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white">
+  <div>
+    <img src="https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white">
+    <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white">
+    <img src="https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white">
+    <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white">
+  </div>
+  <br>
   <p>A simple, efficient, and robust API to verify the balance and validity of Carrefour gift cards.</p>
 </div>
-
-<br>
-
 
 ## 📋 Description
 
@@ -56,7 +56,7 @@ npm run start:prod
 ```
 
 The API will be accessible at: http://localhost:3000
-
+<br>
 Swagger Documentation: http://localhost:3000/api
 
 ## 🧪 Tests
