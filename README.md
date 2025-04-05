@@ -1,15 +1,16 @@
 # 🛒 Carrefour Gift Card Verification API
 
 <div align="center">
+  <img src="docs/banner-readme.png" alt="banner" width="100%">
   <img src="https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white">
   <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white">
   <img src="https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white">
   <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white">
+  <p>A simple, efficient, and robust API to verify the balance and validity of Carrefour gift cards.</p>
 </div>
 
 <br>
 
-A simple, efficient, and robust API to verify the balance and validity of Carrefour gift cards.
 
 ## 📋 Description
 
@@ -88,7 +89,7 @@ docker run -p 3000:3000 carrefour-giftcard-api
 curl -X POST http://localhost:3000/card-balance \
   -H 'Content-Type: application/json' \
   -d '{
-    "cardNumber": "50320004304585671840371",
+    "cardNumber": "50320004304585671840123",
     "pin": "3301"
   }'
 ```
