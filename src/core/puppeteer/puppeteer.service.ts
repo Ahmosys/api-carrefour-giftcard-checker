@@ -98,6 +98,14 @@ export class PuppeteerService {
     return result;
   }
 
+  /**
+   * Gets an existing browser instance or launches a new one if none exists
+   * This method implements a singleton pattern for the browser instance
+   * to optimize resource usage and improve performance.
+   *
+   * @param config The scraper configuration options
+   * @returns A Promise resolving to a Puppeteer Browser instance
+   */
   async getOrLaunchBrowser(config: Required<ScraperOptions>): Promise<Browser> {
     if (this.browser && this.browser.connected) {
       if (config.debug)
