@@ -1,6 +1,7 @@
-# 🛒 Carrefour Gift Card Verification API
+
 
 <div align="center">
+  <h1> Carrefour Gift Card Verification API</h1>
   <img src="docs/banner-readme.png" alt="banner" width="100%">
   <img src="https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white">
   <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white">
