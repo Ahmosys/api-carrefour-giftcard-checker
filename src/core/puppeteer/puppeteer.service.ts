@@ -15,6 +15,7 @@ puppeteer.use(StealthPlugin());
  */
 @Injectable()
 export class PuppeteerService {
+  private browser: Browser | null = null;
   private readonly logger = new Logger(PuppeteerService.name);
   private readonly CARREFOUR_CARD_URL =
     'https://www.cartecadeau.carrefour.fr/page/30/mes-cartes-cadeaux-carrefour';
@@ -54,8 +55,8 @@ export class PuppeteerService {
    */
   async checkCardBalance(options: ScraperOptions): Promise<CardResult | null> {
     const config = this.normalizeOptions(options);
-    let browser: Browser | null = null;
     let result: CardResult | null = null;
+    let page: Page | null = null;
 
     try {
       if (config.debug)
@@ -63,8 +64,8 @@ export class PuppeteerService {
           `[Init] Launching Puppeteer (headless: ${config.headless})`,
         );
 
-      browser = await this.launchBrowser(config);
-      const page = await this.setupPage(browser, config);
+      const browser = await this.getOrLaunchBrowser(config);
+      page = await this.setupPage(browser, config);
 
       let attempts = 0;
       while (!result && attempts < config.maxRetries) {
@@ -87,11 +88,21 @@ export class PuppeteerService {
         error instanceof Error ? error.stack : String(error),
       );
     } finally {
-      await browser?.close();
-      if (config.debug) this.logger.log('[Cleanup] Browser closed');
+      await page?.close();
+      if (config.debug) this.logger.log('[Cleanup] Page closed');
     }
 
     return result;
+  }
+
+  async getOrLaunchBrowser(config: Required<ScraperOptions>): Promise<Browser> {
+    if (this.browser && this.browser.connected) {
+      if (config.debug)
+        this.logger.log('[Init] Browser already launched, using it');
+      return this.browser;
+    }
+    this.browser = await this.launchBrowser(config);
+    return this.browser;
   }
 
   /**
@@ -138,8 +149,7 @@ export class PuppeteerService {
     page.setDefaultTimeout(config.timeout);
     page.setDefaultNavigationTimeout(config.timeout);
 
-    if (config.debug)
-      this.logger.log('[Init] Browser launched, new page created');
+    if (config.debug) this.logger.log('[Init] New page created');
 
     await this.configurePage(page);
     return page;
