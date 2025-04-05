@@ -22,7 +22,7 @@ This API, built with the [NestJS](https://github.com/nestjs/nest) framework, all
 - ✅ Gift card balance verification
 - ✅ Card validity date checking
 - ✅ Debug mode for troubleshooting
-- ✅ Configurable retry attempts and timeouts
+- ✅ Configurable retry attempts and timeouts (Exponential Backoff)
 - ✅ Interactive API documentation via Swagger
 
 ## 🔧 Prerequisites
