@@ -74,7 +74,10 @@ export class PuppeteerService {
           this.logger.log(`[Attempt ${attempts}] Starting balance check...`);
 
         try {
-          result = await this.performBalanceCheck(page, config);
+          result = await this.measurePerformance(
+            () => this.performBalanceCheck(page as Page, config),
+            'performBalanceCheck',
+          );
         } catch (innerError) {
           this.handleRetryError(innerError, attempts, config);
           if (attempts < config.maxRetries) {
