@@ -4,7 +4,6 @@ FROM node:20-slim
 # Set the environment variable
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV CHROME_BIN=/usr/bin/google-chrome
-ENV NODE_ENV=production
 
 # Install necessary dependencies for Puppeteer (for Chromium)
 # Install Google Chrome Stable and fonts
