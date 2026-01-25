@@ -14,9 +14,10 @@ datasource db {
 }
 
 model Card {
-  id           Int    @id @default(autoincrement())
-  cardNumber   String @unique
-  pinCode      String
+  id           Int      @id @default(autoincrement())
+  cardNumber   String   @unique @db.Char(23)
+  pinCode      String   @db.Char(4)
   balance      String?
   validityDate String?
+  lastUpdate   DateTime?
 }
